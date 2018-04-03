@@ -4,14 +4,6 @@ from collections import Iterable
 
 tree=""
 treeFile = open(sys.argv[1]).readlines()
-if len(treeFile) == 1:
-        tree = treeFile[0].rstrip()
-else:
-        for row in treeFile:
-                if "tree tree" in row:
-                        tree=row.rstrip()
-                else:
-                        pass
 simplified_tree=re.compile('(\d+\.\d+|E\-\d)').sub('',tree).replace(';','').replace('-','').replace('_','').replace(':','')
 strains_input=[]
 for row in open(sys.argv[2]).readlines():

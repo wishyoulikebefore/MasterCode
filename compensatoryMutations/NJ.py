@@ -1,22 +1,9 @@
-#usage: python3 .py nwk strain_index
-#This .py script is to judge whether strains harboring one or more same mutations evovle independently in phylogeny trees
-#Principle: if input strains not evolve independently, they should be included in a large cluster, which is showed a (....) 
-
 import sys
 import re
 from collections import Iterable
 
-#substract tree from nwk and simplify its structure; simplify strain name 
 tree=""
 treeFile = open(sys.argv[1]).readlines()
-if len(treeFile) == 1:
-        tree = treeFile[0].rstrip()
-else:
-        for row in treeFile:
-                if "tree tree" in row:
-                        tree=row.rstrip()
-                else:
-                        pass
 simplified_tree=re.compile('(\:\d+\.\d+|E\-\d)').sub('',tree).replace(';','').replace('-','').replace('_','')
 strains_input=[]
 for row in open(sys.argv[2]).readlines():

@@ -1,0 +1,35 @@
+import matplotlib.pyplot as plt
+from pandas import DataFrame,Series
+import pandas as pd
+import matplotlib as mpl
+import numpy as np
+import argparse
+from collections import defaultdict
+
+parser = argparse.ArgumentParser("plot drug's proportion")
+parser.add_argument("drug",choices={"INH","RIF","EMB","PZA"},help="input target drug")
+parser.add_argument("integers",type=int,nargs="+",help="strain number of DR, MDR, pre-XDR, XDR")
+args = parser.parse_args()
+
+DR,MDR,pre_XDR,XDR = args.integers
+DR_mutation = defaultdict(int)
+MDR_mutation = defaultdict(int)
+pre_XDR_mutation = defaultdict(int)
+XDR_mutation = defaultdict(int)
+
+file = open(args.drug+"_mutation_spectrum")
+for row in file.readlines():
+    rowOfList = row.rstrip().split()
+    mutationList = rowOfList[2].split("+")
+    for mutation in mutationList:
+        if rowOfList[1] == "DR":
+            DR_mutation[mutation] += 1
+        elif rowOfList[1] == "MDR":
+            MDR_mutation[mutation] += 1
+        elif rowOfList[1] == "pre-MDR":
+            pre_XDR_mutation[mutation] += 1
+        else:
+            XDR_mutation[mutation] += 1
+file.close()
+
+mutationList = list(set(DR_mutation.keys()+MDR_mutation.keys()+pre_XDR_mutation.keys()+XDR_mutation.keys()))

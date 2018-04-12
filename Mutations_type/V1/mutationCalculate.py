@@ -6,7 +6,6 @@ output=open("resistantStrains_mutations_info","a")
 DR_list=open("DR.list","a")
 DR_RIF_list=open("DR_RIF.list","a")
 DR_INH_list=open("DR_INH.list","a")
-DR_FLUO_list=open("DR_FLUO.list","a")
 DR_PZA_list=open("DR_PZA.list","a")
 DR_EMB_list=open("DR_EMB.list","a")
 MDR_list=open("MDR.list","a")
@@ -18,7 +17,6 @@ pre_XDR_EMB_list=open("pre-XDR_EMB.list","a")
 XDR_list=open("XDR.list","a")
 XDR_PZA_list=open("XDR_PZA.list","a")
 XDR_EMB_list=open("XDR_EMB.list","a")
-S_list=open("S.list","a")
 INH_mutation_spectrum = open("INH_mutation_spectrum","a")
 RIF_mutation_spectrum = open("RIF_mutation_spectrum","a")
 EMB_mutation_spectrum = open("EMB_mutation_spectrum","a")
@@ -102,7 +100,7 @@ def distribute(strain,period,mutationDict):
         if mutationDict.get("EMB"):
             DR_EMB_list.write(strain + "\n")
     else:
-        S_list.write(strain + "\n")
+        pass
 
 def IREP_calculate(strain,period,INH,RIF,EMB,PZA):
     if INH != "['']":

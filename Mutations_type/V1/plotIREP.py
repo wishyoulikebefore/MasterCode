@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from pandas import DataFrame,Series
-import pandas as pd
 import matplotlib as mpl
 import numpy as np
 import argparse
@@ -15,6 +14,8 @@ args = parser.parse_args()
 
 strainNumOfPeriod = dict(zip(["DR","MDR","pre-XDR","XDR"],args.integers))
 mutationDict = defaultdict(list)
+period = ["DR","MDR","pre-XDR","XDR"]
+offset = [-0.3,-0.1,0.1,0.3]
 
 fig = plt.figure()
 ax = plt.gca()
@@ -37,18 +38,7 @@ def process(drug):
     frame["sum"] = frame["DR"] + frame["MDR"] + frame["pre-XDR"] + frame["XDR"]
     filterFrame = frame[frame["sum"] > 10]
     indexList = filterFrame.index
-    myplot(filterFrame,"DR",-0.3,colors[0])
-    myplot(filterFrame,"MDR",-0.1,colors[1])
-    myplot(filterFrame,"pre-XDR",0.1,colors[2])
-    myplot(filterFrame,"XDR",0.3,colors[3])
-    plt.ylabel("比例(%)", fontsize=15)
-    plt.ylim(0, max(maxProportionList) + 5)
-    plt.xlim(0, len(indexList) + 2)
-    plt.xticks(range(1, len(indexList) + 1), indexList)
-    plt.title("%s耐药突变在不同耐药阶段所占比例" %(args.drug), fontsize=20)
-    fig.autofmt_xdate()
-    plt.legend()
-    plt.show()
+    myplot(filterFrame,indexList)
 
 def dict2frame(mutationDict):
     index = []
@@ -59,18 +49,31 @@ def dict2frame(mutationDict):
         index.append(key)
         outcome = [counter[i] for i in columns]
         calculation.append(outcome)
-    frame = pd.DataFrame(calculation,columns=columns,index=index)
+    frame = DataFrame(calculation,columns=columns,index=index)
     if os.path.exists("%s_proportion" %(args.drug)):
         print("%s_proportion has been updated" %(args.drug))
         os.remove("%s_proportion" %(args.drug))
     frame.to_csv("%s_proportion" %(args.drug))
     return frame
 
-def myplot(filterFrame,colName,x_shift,barColor):
-    frameslice = filterFrame[colName]
-    proportion = frameslice/strainNumOfPeriod.get(colName)*100
-    xloc = np.arange(len(frameslice))+1+x_shift
-    plt.bar(xloc,proportion,0.2,color=barColor,label=colName)
-    maxProportionList.append(max(proportion))
+def myplot(filterFrame,indexList):
+    for nu in range(len(period)):
+        colName = period[nu]
+        x_shift = offset[nu]
+        barColor = colors[nu]
+        frameslice = filterFrame[colName]
+        proportion = frameslice/strainNumOfPeriod.get(colName)*100
+        xloc = np.arange(len(frameslice))+1+x_shift
+        plt.bar(xloc,proportion,0.2,color=barColor,label=colName)
+        maxProportionList.append(max(proportion))
+    plt.text(0.05,0.95,args.drug,transform = ax.transAxes,fontsize=16,fontweight="bold",va="top")
+    plt.ylabel("比例(%)", fontsize=15)
+    plt.ylim(0, max(maxProportionList) + 5)
+    plt.xlim(0, len(indexList) + 2)
+    plt.xticks(range(1, len(indexList) + 1), indexList)
+    plt.title("%s耐药突变在不同耐药阶段所占比例" %(args.drug), fontsize=20)
+    fig.autofmt_xdate()
+    plt.legend()
+    plt.show()
 
 process(args.drug)

@@ -12,9 +12,9 @@ parser.add_argument("drug",choices={"INH","RIF","EMB","PZA"},help="input target 
 parser.add_argument("integers",type=int,nargs="+",help="strain number of DR, MDR, pre-XDR, XDR")
 args = parser.parse_args()
 
-strainNumOfPeriod = dict(zip(["DR","MDR","pre-XDR","XDR"],args.integers))
-mutationDict = defaultdict(list)
 period = ["DR","MDR","pre-XDR","XDR"]
+strainNumOfPeriod = dict(zip(period,args.integers))
+mutationDict = defaultdict(list)
 offset = [-0.3,-0.1,0.1,0.3]
 
 fig = plt.figure()
@@ -36,7 +36,7 @@ def process(drug):
                 pass
     frame = dict2frame(mutationDict)
     frame["sum"] = frame["DR"] + frame["MDR"] + frame["pre-XDR"] + frame["XDR"]
-    filterFrame = frame[frame["sum"] > 10]
+    filterFrame = frame[frame["sum"] > 10].sort_values(by="sum",ascending=False)
     indexList = filterFrame.index
     myplot(filterFrame,indexList)
 

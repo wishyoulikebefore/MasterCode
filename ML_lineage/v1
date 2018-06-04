@@ -5,51 +5,11 @@
 结果利用True^ isin 再unique看
 """
 
-f1 = sys.argv[1]    #markedLineage.list
-f2 = sys.argv[2]     #loci_file_list
-lociFrame = pd.read_table(f2,names=["loci","ref"],index_col="loci")
-lineageFrame = pd.read_table(f1,names=["strain","lineage"])
-lineageDict = dict(zip(lineageFrame["strain"],lineageFrame["lineage"]))
-lociList = lociFrame.index
-strainList = lineageFrame["strain"]
-snpInfo = []
-lineageInfo = []
-
-def processSnpFile(strain,path=None):
-        if not path:
-                snpFrame = pd.read_table(strain+".snp",names=["loci","ref","mut"],index_col="loci")
-        else:
-                snpFrame = pd.read_table(path+"/"+strain+".snp",names=["loci","ref","mut"],index_col="loci")
-        snpList = []
-        snpDict = dict(zip(snpFrame.index,snpFrame["mut"]))
-        for loci in lociList:
-                if snpDict.get(loci):
-                        snpList.append(1)
-                else:
-                        snpList.append(0)
-        return snpList
-
-for strain in strainList:
-        snpInfo.append(processSnpFile(strain))
-        lineageInfo.append([int(lineageDict.get(strain).replace("lineage",""))]*len(lociList))
-        
-array1 = np.array(lineageInfo)
-array2 = np.array(snpInfo)
-calMatrix = array1*array2
-df = pd.DataFrame(calMatrix,columns=lociList,index=strainList)
-for column in lociList:
-        array = df[column][True^df[column].isin([0])]
-        lineageList = array.unique()
-        if len(lineageList) == 1:
-                print("%s:lineage%s" %(column,lineageList[0]))
-        else:
-                pass
-
 2018.6.4
 """
 考虑更复杂的情况：对每个位点，考虑突变类型
 将lineage设定为index
-输出位点仍然过多
-需要设个阈值，看之前的60个lineage位点出现频率
+加入多进程，提高速度
+先输出中间文件，避免占用多大内存
 """
 
